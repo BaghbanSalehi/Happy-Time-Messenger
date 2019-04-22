@@ -18,6 +18,8 @@
 		63E28B331B9A337600FBF6E0 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E28B2E1B9A337600FBF6E0 /* WelcomeViewController.swift */; };
 		63EBB3051D98004B004175E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63EBB3041D98004B004175E5 /* LaunchScreen.storyboard */; };
 		8FA9E9535E777900373A1125 /* Pods_Happy_Time_Messenger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA443ACD787E90A1FE6D22A4 /* Pods_Happy_Time_Messenger.framework */; };
+		E400A282226B21EA00C94757 /* BlackList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400A281226B21EA00C94757 /* BlackList.swift */; };
+		E400A284226B3B5000C94757 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400A283226B3B5000C94757 /* SwipeTableViewController.swift */; };
 		E416DDD021F7421000B1CDE0 /* RoomsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E416DDCE21F7421000B1CDE0 /* RoomsCell.swift */; };
 		E416DDD321F74AD500B1CDE0 /* Rooms.swift in Sources */ = {isa = PBXBuildFile; fileRef = E416DDD221F74AD500B1CDE0 /* Rooms.swift */; };
 		E421F3BF21ECFA8A006E58AD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E421F3BE21ECFA8A006E58AD /* Images.xcassets */; };
@@ -44,6 +46,8 @@
 		63EBB3041D98004B004175E5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ../LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AA443ACD787E90A1FE6D22A4 /* Pods_Happy_Time_Messenger.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Happy_Time_Messenger.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA60839F692BD2A9D174E04F /* Pods-Happy Time Messenger.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Happy Time Messenger.release.xcconfig"; path = "Pods/Target Support Files/Pods-Happy Time Messenger/Pods-Happy Time Messenger.release.xcconfig"; sourceTree = "<group>"; };
+		E400A281226B21EA00C94757 /* BlackList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackList.swift; sourceTree = "<group>"; };
+		E400A283226B3B5000C94757 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 		E416DDCE21F7421000B1CDE0 /* RoomsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomsCell.swift; sourceTree = "<group>"; };
 		E416DDD221F74AD500B1CDE0 /* Rooms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rooms.swift; sourceTree = "<group>"; };
 		E421F3BE21ECFA8A006E58AD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -129,6 +133,8 @@
 		6321A9EA1B94EC0A0053D2E7 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				E400A283226B3B5000C94757 /* SwipeTableViewController.swift */,
+				E400A281226B21EA00C94757 /* BlackList.swift */,
 				63E28B2A1B9A337600FBF6E0 /* AppDelegate.swift */,
 				63E28B2B1B9A337600FBF6E0 /* ChatViewController.swift */,
 				63E28B2C1B9A337600FBF6E0 /* LogInViewController.swift */,
@@ -257,6 +263,7 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -268,6 +275,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -314,8 +322,10 @@
 				63E28B2F1B9A337600FBF6E0 /* AppDelegate.swift in Sources */,
 				E4A8E62D21E4F4D100DAE404 /* VerificationViewController.swift in Sources */,
 				E416DDD021F7421000B1CDE0 /* RoomsCell.swift in Sources */,
+				E400A284226B3B5000C94757 /* SwipeTableViewController.swift in Sources */,
 				63E28B301B9A337600FBF6E0 /* ChatViewController.swift in Sources */,
 				E470668E21E256B7005F5CB2 /* SentMessageCell.swift in Sources */,
+				E400A282226B21EA00C94757 /* BlackList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

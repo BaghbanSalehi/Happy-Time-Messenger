@@ -13,6 +13,7 @@ import Firebase
 import SVProgressHUD
 
 
+
 class RegisterViewController: UIViewController,UITextFieldDelegate {
 
     
@@ -21,21 +22,57 @@ class RegisterViewController: UIViewController,UITextFieldDelegate {
     @IBOutlet var emailTextfield: UITextField!
     @IBOutlet var passwordTextfield: UITextField!
     @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var EULATextView: UITextView!
     @IBOutlet weak var usernameTextfield: UITextField!
     
-    let doesNotAllowed = ["fuck","Fuck","bitch","BITCH"]
+    var agreed = false
     
+    let doesNotAllowed = ["fuck","Fuck","bitch","BITCH","Nill","NILL","ADMIN","admin","Admin"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         emailTextfield.delegate = self
         passwordTextfield.delegate = self
         usernameTextfield.delegate = self
-    }
+      
+        // bando basate gozashtan link vasate matn
+        //******************************************************************************************************
+        let attributedString = NSMutableAttributedString(string: "I have read and agreed to EULA terms")
+        let url = URL(string: "http://happytimemessenger.blogfa.com")!
+        
+        // Set the 'click here' substring to be the link
+        attributedString.setAttributes([.link: url], range: NSMakeRange(26, 4))
 
+        EULATextView.attributedText = attributedString
+        EULATextView.isUserInteractionEnabled = true
+        EULATextView.isEditable = false
+        // Set how links should appear: blue and underlined
+        EULATextView.linkTextAttributes = [
+            .foregroundColor: UIColor.blue,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+
+    }
+//*******************************************************************************************************************
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+    @IBAction func agreePressed(_ sender: UIButton) {
+    agreed = !agreed
+        if agreed {
+            
+            sender.setImage(UIImage(named: "check"), for: .normal)
+            
+        }
+        else
+        {
+            sender.setImage(UIImage(named: "CheckBox"), for: .normal)
+        }
+        
+        
+    }
+    
     
 
   
@@ -54,6 +91,12 @@ class RegisterViewController: UIViewController,UITextFieldDelegate {
                 self.errorLabel.text = "Please enter a valid username"
                 SVProgressHUD.dismiss()
             }
+            else if !self.agreed {
+                
+                Auth.auth().currentUser?.delete(completion: nil)
+                self.errorLabel.text = "You must agree to EULA terms in order to proceed"
+                SVProgressHUD.dismiss()
+                }
             else
             {
                 let image = UIImage(named: "egg")
@@ -66,6 +109,7 @@ class RegisterViewController: UIViewController,UITextFieldDelegate {
                 
                 let usersDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/Username")
                 usersDB.setValue(self.usernameTextfield.text)
+                
 
                 Auth.auth().currentUser?.sendEmailVerification {(error) in
 if error != nil
@@ -73,18 +117,19 @@ if error != nil
     Auth.auth().currentUser?.delete(completion: nil)
     print(error!)
     handleError(error!)
+    SVProgressHUD.dismiss()
 }
 else
 {
     self.performSegue(withIdentifier: "goToVerification", sender: self)
-    
+    SVProgressHUD.dismiss()
     
 }
                     
     
                 }
                
-                SVProgressHUD.dismiss()
+                
                 
                 
             }

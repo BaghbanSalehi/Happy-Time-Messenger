@@ -10,11 +10,12 @@ import UIKit
 import Firebase
 import ChameleonFramework
 import MobileCoreServices
+import SwipeCellKit
+import MessageUI
+import Photos
 
 
-
-
-class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
+class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,MFMailComposeViewControllerDelegate,BlackListDelegate {
     
     // Declare instance variables
     var messageArray : [Message] = [Message]()
@@ -31,19 +32,32 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
     var myRealoaded = false
     var theirRealoaded = false
     
+     var blockedUsers = [String]()
+     let defaults = UserDefaults.standard
+     var currentUser = ""
 
-    
+    let doesNotAllowed = ["fuck","Fuck","bitch","BITCH","nigga","NIGGA","niga","NIGA","fck","FCK"]
     
     @IBOutlet var heightConstraint: NSLayoutConstraint!
     @IBOutlet var sendButton: UIButton!
     @IBOutlet var messageTextfield: UITextField!
     @IBOutlet var messageTableView: UITableView!
-    @IBOutlet weak var i: UIImageView!
     
     
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        currentUser = (Auth.auth().currentUser?.uid)!
+        
+        if let blackList = UserDefaults.standard.array(forKey: "Block") as? [String]{
+            
+            blockedUsers = blackList
+            print(blockedUsers)
+            
+        }
+
 
         // taghire size keyboard be surate dynamic (stackflow)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -52,7 +66,6 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
         usersDB.observe(.value){ (snapshot) in
             let snapshotValue = snapshot.value as? String
             self.user = snapshotValue!
-            
         }
 
         //link kardan table ba vc
@@ -80,13 +93,13 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
         retrieveMessages()
     }
 
-    ///////////////////////////////////////////
+//*************************************************************************************************************************************
     
     //MARK: - TableView DataSource Methods
     
     
     
-    //TODO: Declare cellForRowAtIndexPath
+    // Declare cellForRowAtIndexPath
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
 
@@ -164,7 +177,36 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messageArray.count
     }
-
+//*******************************************************************************************************************************
+    // MARK:- Block & report
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if !(messageArray[indexPath.row].photoId == Auth.auth().currentUser!.uid){
+        let alert = UIAlertController(title: "Select an action", message: "How can we help you", preferredStyle: .actionSheet)
+            
+        let block = UIAlertAction(title: "BLOCK", style: .default) { (action) in
+            self.blockedUsers.append(self.messageArray[indexPath.row].sender)
+            self.defaults.set(self.blockedUsers, forKey: "Block")
+            let blockReport = UIAlertController(title: "User blocked", message: "The user has been blocked.You can unblock him/her at any time.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+            blockReport.addAction(ok)
+            self.present(blockReport,animated: true)
+        }
+            
+            let report = UIAlertAction(title: "REPORT", style: .default) { (action) in
+                self.sendEmail(reportedUser: "\(self.messageArray[indexPath.row].photoId)")
+            }
+        
+        let cancel = UIAlertAction(title: "CANCEL", style: .cancel, handler: nil)
+            
+        alert.addAction(block)
+        alert.addAction(report)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
+        
+    }
+        messageTableView.deselectRow(at: indexPath, animated: true)
+    }
+    //****************************************************************************************************************************
     
     //in tabe bara vaghtie ke roye safhe ke hamun tv hast mizanim e ke darvaghe payane type kardan ro neshun mide
     @objc func tableViewTapped()
@@ -186,7 +228,7 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
     
     
     
-    ///////////////////////////////////////////
+//*************************************************************************************************************************************
     
     //MARK:- TextField Delegate Methods
     
@@ -223,7 +265,7 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
     
     ///////////////////////////////////////////
     
-    
+//*************************************************************************************************************************************
     //MARK: - Send & Recieve from Firebase
     
     
@@ -232,6 +274,14 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
     
     @IBAction func sendPressed(_ sender: AnyObject) {
         //MARK : -bando basat ersal payam va zakhire shodaneshun dar firebase
+        for i in 0..<doesNotAllowed.count{
+            if (messageTextfield.text?.contains(doesNotAllowed[i]))!  {
+            
+            messageTextfield.text = "***********"
+            
+        }
+        }
+        
         if messageTextfield.text != ""{ // payam bedune matn nade
         //aval az hame baad az zadane send keyboard ro mibandim
         messageTextfield.endEditing(true)
@@ -265,39 +315,41 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
         
         
     }
-    
-    //TODO: retrieve kardan payam ha az firebase
+//*************************************************************************************************************************************
+//retrieve kardan payam ha az firebase
     func retrieveMessages ()
     {
+
         
-    
-        let messageDB = Database.database().reference().child("Messages/\(rooms)")
+
+            let messageDB = Database.database().reference().child("Messages/\(self.rooms)")
         messageDB.observe(.childAdded) { (snapshot) in
+            
             let snapshotValue = snapshot.value as! Dictionary<String,String>
             let text = snapshotValue["MessageBody"]!
             let sender = snapshotValue["sender"]!
             let photo = snapshotValue["photo"]!
             let message = Message()
+            print(self.blockedUsers)
+            if !(self.blockedUsers.contains(sender)) {
             message.messageBody = text
             message.sender = sender
             message.photoId = photo
             self.messageArray.append(message)
+
+            }
             self.configureTableView()
             self.messageTableView.reloadData()
+            if (self.messageArray.count > 1 && !(self.blockedUsers.contains(sender))) {
             let ip = IndexPath(row: self.messageArray.count-1, section: 0)
-            self.messageTableView.scrollToRow(at: ip, at: .bottom , animated: true)
-                
-            
-            
-        }
-        
+            self.messageTableView.scrollToRow(at: ip, at: .bottom, animated: true)
+            }
+            }
         
         
     }
-    
 
-    
-    
+//*************************************************************************************************************************************
     
     @IBAction func logOutPressed(_ sender: AnyObject) {
         login = false
@@ -318,37 +370,69 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
         }
         
     }
-    // bando basat camera
+//*************************************************************************************************************************************
+    //MARK:- bando basat camera
+    // bando basat permission gereftanam injas
     @IBAction func cameraPressed(_ sender: Any) {
 
         let alert = UIAlertController(title: "Select Image From", message: "", preferredStyle: .actionSheet)
         let cameraAction = UIAlertAction(title: "Camera", style: .default){(action) in
-            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)
-            {
-             let imagePicker = UIImagePickerController()
-                imagePicker.delegate = self
-                imagePicker.sourceType = UIImagePickerController.SourceType.camera
-                imagePicker.mediaTypes = [kUTTypeImage as String]
-                imagePicker.allowsEditing = false
-                self.present(imagePicker, animated: true, completion: nil)
-                self.newPic = true
-            
-        }
+            AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
+                if response {
+                    //access granted
+                    if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)
+                    {
+                        let imagePicker = UIImagePickerController()
+                        imagePicker.delegate = self
+                        imagePicker.sourceType = UIImagePickerController.SourceType.camera
+                        imagePicker.mediaTypes = [kUTTypeImage as String]
+                        imagePicker.allowsEditing = false
+                        self.present(imagePicker, animated: true, completion: nil)
+                        self.newPic = true
+                        
+                    }
+                    
+                }
+                else
+                {
+                 self.denied()
+                }
+            }
+ 
             }
         let cameraRollAction = UIAlertAction(title: "Camera Roll", style: .default){ (action) in
+            let photoes = PHPhotoLibrary.authorizationStatus()
             
-            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.photoLibrary)
-            {
-               let imagePicker = UIImagePickerController()
-                imagePicker.delegate = self
-                imagePicker.sourceType = UIImagePickerController.SourceType.photoLibrary
-                imagePicker.mediaTypes = [kUTTypeImage as String]
-                imagePicker.allowsEditing = false
-                self.present(imagePicker, animated: true, completion: nil)
-                self.newPic = false
+            switch photoes {
+            
+            case .authorized :
                 
+                self.picFromLib()
+    
+            case .denied :
+                
+                self.denied()
+            
+            case .notDetermined :
+                
+                PHPhotoLibrary.requestAuthorization { (status) in
+                    if status == .authorized{
+                        
+                        self.picFromLib()
+                        
+                    }
+                    else
+                    {
+                        self.denied()
+                    }
+                }
+            default :
+                break
                 
             }
+            
+            
+
             
         }
         alert.addAction(cameraAction)
@@ -356,6 +440,36 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
         self.present(alert, animated: true)
         
         }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    func picFromLib()
+    {
+        if UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.photoLibrary)
+        {
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = self
+            imagePicker.sourceType = UIImagePickerController.SourceType.photoLibrary
+            imagePicker.mediaTypes = [kUTTypeImage as String]
+            imagePicker.allowsEditing = false
+            self.present(imagePicker, animated: true, completion: nil)
+            self.newPic = false
+            
+            
+            
+            
+        }
+    }
+    
+    func denied()
+    {
+        let alert = UIAlertController(title: "Operation Failed", message: "Access denied", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alert.addAction(ok)
+        self.present(alert,animated: true)
+    }
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])
     {
         let mediaType = info[.mediaType] as! NSString
@@ -373,7 +487,6 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
                 else
             {
                 self.myRealoaded = false
-                print("ssssssssssss")
             }
              }
 
@@ -409,8 +522,43 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
             alert.addAction(cancelAction)
             present(alert, animated: true, completion: nil)
         }
+//*************************************************************************************************************************************
+    }
+    func updateBlackList(black :[String])
+    {
+        blockedUsers = black
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let blackListVC = segue.destination as! BlackList
+            blackListVC.delegate = self
+        blackListVC.blackList = blockedUsers
+    }
+//*************************************************************************************************************************************
+//bando basat mail zadan az stackflow
+
+    func sendEmail(reportedUser : String) {
+        let composeVC = MFMailComposeViewController()
+        composeVC.mailComposeDelegate = self
+        // Configure the fields of the interface.
+        composeVC.setToRecipients(["software.developer.bsalehi@gmail.com"])
+        composeVC.setSubject("Report")
+        composeVC.setMessageBody("The following user has been reported because,he or she has been used objectionable content or is a abusive user and I have not included my personal feelings in this report decision.PLEASE DO NOT CHANGE THE FOLLOWING USER ID.Reported userID is: \(reportedUser)", isHTML: false)
+        // Present the view controller modally.
+        self.present(composeVC, animated: true, completion: nil)
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+     controller.dismiss(animated: true, completion: nil)
+        if result.rawValue == MFMailComposeResult.sent.rawValue {
+        let reportAlert = UIAlertController(title: "The user has been reported", message: "Thank you for contributing to make our community a safer place.We will check the problem and make any necessary actions within 24 hours. ", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        reportAlert.addAction(ok)
+        self.present(reportAlert,animated: true)
+        }
         
     }
-
+    
 
 }

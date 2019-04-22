@@ -13,6 +13,7 @@ pod 'Firebase/Core'
 pod 'SVProgressHUD'
 pod 'ChameleonFramework'
 pod 'Firebase/Storage'
+pod 'SwipeCellKit'
 
 end
 post_install do |installer|

@@ -13,7 +13,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Happy time needs your permision</string>
+	<string>We need this so you can set a profile picture for yourself</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>UIMainStoryboardFile</key>
@@ -29,7 +29,9 @@
 		<string>armv7</string>
 	</array>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Happy time needs your permision</string>
+	<string>We need this so the taken photo can be saved in photo library</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need this so you can set a profile picture for yourself</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>LSApplicationCategoryType</key>
@@ -44,7 +46,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Happy time needs your permision</string>
 </dict>
 </plist>
