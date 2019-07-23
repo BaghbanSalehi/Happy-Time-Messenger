@@ -24,23 +24,12 @@ class BlackList: SwipeTableViewController {
     
     var delegate : BlackListDelegate?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-//        let BlackListDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/BlackList")
-//        BlackListDB.observe(.childAdded) { (snapshot) in
-//            let snapshotValue = snapshot.value as! String
-//            if !(snapshotValue == "Nill"){
-//            self.blackList.append(snapshotValue)
-//            self.del.append(snapshot.key)
-//            self.tableView.reloadData()
-//
-//        }
-//        }
-        
-        
+    
     }
+    
 //**************************************************************************************************************************
 
 //**************************************************************************************************************************
@@ -58,7 +47,6 @@ class BlackList: SwipeTableViewController {
     }
 //***************************************************************************************
     override func updateModel(at indexPath: IndexPath) {
-//        let BlackListDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/BlackList")
         defaults.mutableArrayValue(forKey: "Block").removeObject(at: indexPath.row)
          blackList.remove(at: indexPath.row)
         delegate?.updateBlackList(black: blackList)
@@ -68,7 +56,16 @@ class BlackList: SwipeTableViewController {
         
     }
     
-
+    @IBAction func helpPressed(_ sender: UIBarButtonItem) {
+        
+        let alert = UIAlertController(title: "INFORMATION", message: "Swipe left to unblock a user.", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
+        alert.addAction(ok)
+        
+        present(alert,animated: true)
+        
+    }
+    
 
 }
 

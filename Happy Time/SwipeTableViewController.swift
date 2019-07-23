@@ -28,7 +28,7 @@ class SwipeTableViewController: UITableViewController,SwipeTableViewCellDelegate
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
         guard orientation == .right else { return nil }
         
-        let deleteAction = SwipeAction(style: .destructive, title: "Unblock") { action, indexPath in
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
            
             self.updateModel(at: indexPath)
             

@@ -15,6 +15,8 @@ import SVProgressHUD
 
 class LogInViewController: UIViewController,UITextFieldDelegate {
 
+    var defaults = UserDefaults.standard
+    
     //Textfields pre-linked with IBOutlets
     @IBOutlet var emailTextfield: UITextField!
     @IBOutlet var passwordTextfield: UITextField!
@@ -24,7 +26,12 @@ class LogInViewController: UIViewController,UITextFieldDelegate {
         super.viewDidLoad()
         emailTextfield.delegate = self
         passwordTextfield.delegate = self
-
+        
+        if let remember = UserDefaults.standard.string(forKey: "remember"){
+            
+            emailTextfield.text = remember
+            
+        }
 
     }
 
@@ -48,6 +55,7 @@ class LogInViewController: UIViewController,UITextFieldDelegate {
             {
                 if (Auth.auth().currentUser!.isEmailVerified){
                     self.performSegue(withIdentifier: "goToRooms", sender: self)
+                    self.defaults.setValue(self.emailTextfield.text, forKey: "remember")
                     SVProgressHUD.dismiss()
                 }
                 else

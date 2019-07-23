@@ -10,10 +10,8 @@ import UIKit
 import Firebase
 import ChameleonFramework
 import MobileCoreServices
-import SwipeCellKit
 import MessageUI
 import Photos
-
 
 class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,MFMailComposeViewControllerDelegate,BlackListDelegate {
     
@@ -34,9 +32,18 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
     
      var blockedUsers = [String]()
      let defaults = UserDefaults.standard
-     var currentUser = ""
 
-    let doesNotAllowed = ["fuck","Fuck","bitch","BITCH","nigga","NIGGA","niga","NIGA","fck","FCK"]
+    let doesNotAllowed = ["fuck","Fuck","bitch","BITCH","nigga","NIGGA","niga","NIGA","fck","FCK","dick","DICK","ass","ASS"]
+    
+    var onlineUsers = OnlineUsers.singleton
+    
+    var pm = ""
+
+    var pmControll = false
+    
+    var receiverID = ""
+    
+    let notificationButton = BadgeButton()
     
     @IBOutlet var heightConstraint: NSLayoutConstraint!
     @IBOutlet var sendButton: UIButton!
@@ -44,19 +51,42 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
     @IBOutlet var messageTableView: UITableView!
     
     
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        currentUser = (Auth.auth().currentUser?.uid)!
+       //controll karadan new pm
+        let controllDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/PMs")
+        controllDB.observe(.childAdded) { (snapshot) in
+            self.pmControll = true
+            print("ggggggggg")
+        }
         
+
+    
+    
+//blacklist
         if let blackList = UserDefaults.standard.array(forKey: "Block") as? [String]{
             
             blockedUsers = blackList
-            print(blockedUsers)
             
         }
+        
+        
+            
+            let storage = Storage.storage().reference().child("UserPics/\(Auth.auth().currentUser!.uid)")
+            storage.getData(maxSize: 1 * 1024 * 1024){(data, error) in
+                if error != nil
+                {
+                    print(error!)
+                }
+                else
+                {
+                    self.saveImage(imageName: "userPic", image: UIImage(data: data!)!)
+                   
+                }
+            }
+            
+        
 
 
         // taghire size keyboard be surate dynamic (stackflow)
@@ -66,6 +96,8 @@ class ChatViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
         usersDB.observe(.value){ (snapshot) in
             let snapshotValue = snapshot.value as? String
             self.user = snapshotValue!
+        let onlineDB = Database.database().reference().child("OnlineUsers/\(Auth.auth().currentUser!.uid)")
+            onlineDB.setValue(self.user)
         }
 
         //link kardan table ba vc
@@ -92,6 +124,125 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
         configureTableView()
         retrieveMessages()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        //pm key with badge icon
+        
+        notificationButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
+        notificationButton.setImage(UIImage(named: "inbox")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        notificationButton.addTarget(self, action: #selector(rightButtonTouched), for: .touchUpInside)
+        notificationButton.badgeEdgeInsets = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 15)
+        notificationButton.badge = ""
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: notificationButton)
+        
+      pmController()
+
+        
+    }
+
+//
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        if self.isMovingFromParent {
+            if let db = Auth.auth().currentUser?.uid {
+             let onlineDB = Database.database().reference().child("OnlineUsers/\(db)")
+            onlineDB.removeValue()
+        
+    }
+        }
+}
+
+    @objc func rightButtonTouched() {
+        performSegue(withIdentifier: "goToPV", sender: nil)
+        print("right button touched")
+    }
+    
+    
+//*************************************************************************************************************************************
+    // MARK:- local image save & load
+    //copy paste stackflow
+    func saveImage(imageName: String, image: UIImage) {
+        
+        
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        
+        let fileName = imageName
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        guard let data = image.jpegData(compressionQuality: 1) else { return }
+        
+        //Checks if file exists, removes it if so.
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            do {
+                try FileManager.default.removeItem(atPath: fileURL.path)
+                print("Removed old image")
+            } catch let removeError {
+                print("couldn't remove file at path", removeError)
+            }
+            
+        }
+        
+        do {
+            try data.write(to: fileURL)
+        } catch let error {
+            print("error saving file with error", error)
+        }
+        
+    }
+    
+    
+    
+    func loadImageFromDiskWith(fileName: String) -> UIImage? {
+        
+        let documentDirectory = FileManager.SearchPathDirectory.documentDirectory
+        
+        let userDomainMask = FileManager.SearchPathDomainMask.userDomainMask
+        let paths = NSSearchPathForDirectoriesInDomains(documentDirectory, userDomainMask, true)
+        
+        if let dirPath = paths.first {
+            let imageUrl = URL(fileURLWithPath: dirPath).appendingPathComponent(fileName)
+            let image = UIImage(contentsOfFile: imageUrl.path)
+            return image
+            
+        }
+        
+        return nil
+    }
+//*************************************************************************************************************************************
+    func pmController ()
+    {
+        let seenDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/seenDB")
+        seenDB.observe(.childAdded) { (snapshot) in
+            let snapshotValue = snapshot.value as! String
+            if snapshotValue == "false" {
+                self.notificationButton.badge = "1"
+                
+            }
+                
+//            else
+//            {
+//                self.seen = ""
+//                self.notificationButton.badge = self.seen
+//            }
+        
+    }
+        
+        seenDB.observe(.childChanged) { (snapshot) in
+            let snapshotValue = snapshot.value as! String
+            if snapshotValue == "false" {
+                
+                self.notificationButton.badge = "1"
+
+            }
+                
+//            else
+//            {
+//                self.seen = ""
+//                self.notificationButton.badge = self.seen
+//            }
+        }
+}
 
 //*************************************************************************************************************************************
     
@@ -113,26 +264,42 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
         if login == true
         {
             
-        let storage = Storage.storage().reference().child("UserPics/\(Auth.auth().currentUser!.uid)")
-        storage.getData(maxSize: 1 * 1024 * 1024){(data, error) in
-            if error != nil
-            {
-               print(error!)
-            }
-            else
-            {
-                self.avatar["\(self.messageArray[indexPath.row].photoId)"] = UIImage(data: data!)
-                if !self.myRealoaded {
-                self.messageTableView.reloadData()
-                    self.myRealoaded = true
-                }
-            }
-        }
+//        let storage = Storage.storage().reference().child("UserPics/\(Auth.auth().currentUser!.uid)")
+//        storage.getData(maxSize: 1 * 1024 * 1024){(data, error) in
+//            if error != nil
+//            {
+//               print(error!)
+//            }
+//            else
+//            {
+//                self.avatar["\(self.messageArray[indexPath.row].photoId)"] = UIImage(data: data!)
+//                if !self.myRealoaded {
+//                self.messageTableView.reloadData()
+//                    self.myRealoaded = true
+//                }
+//            }
+//        }
+            
+            self.avatar["\(self.messageArray[indexPath.row].photoId)"] = loadImageFromDiskWith(fileName: "userPic")
+            
+            if !self.myRealoaded {
+                                self.messageTableView.reloadData()
+                                    self.myRealoaded = true
+                                }
+            
+            
+            
            cell.avatarImageView.image = avatar["\(messageArray[indexPath.row].photoId)"]
     }
             cell.avatarImageView.backgroundColor = UIColor.flatMint()
             cell.messageBackground.backgroundColor = UIColor.flatBlue()
+    
+            pmController()
+        
             return cell
+        
+
+        
        }
         
         else
@@ -164,7 +331,11 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
         }
             cell.avatarImageView.backgroundColor = UIColor.flatWatermelon()
             cell.messageBackground.backgroundColor = UIColor.flatGray()
+
+            pmController()
+            
             return cell
+            
         }
         
         
@@ -180,22 +351,75 @@ messageTableView.register(UINib(nibName: "MessageSent", bundle: nil), forCellReu
 //*******************************************************************************************************************************
     // MARK:- Block & report
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if !(messageArray[indexPath.row].photoId == Auth.auth().currentUser!.uid){
+        
+            receiverID = messageArray[indexPath.row].photoId
+        let receiverUser = messageArray[indexPath.row].sender
+        
+        if !(receiverID == Auth.auth().currentUser!.uid && self.blockedUsers.contains(receiverUser)){
         let alert = UIAlertController(title: "Select an action", message: "How can we help you", preferredStyle: .actionSheet)
             
         let block = UIAlertAction(title: "BLOCK", style: .default) { (action) in
-            self.blockedUsers.append(self.messageArray[indexPath.row].sender)
+            self.blockedUsers.append(receiverUser)
             self.defaults.set(self.blockedUsers, forKey: "Block")
             let blockReport = UIAlertController(title: "User blocked", message: "The user has been blocked.You can unblock him/her at any time.", preferredStyle: .alert)
             let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil)
             blockReport.addAction(ok)
             self.present(blockReport,animated: true)
         }
+            block.setValue(UIColor.red, forKey: "titleTextColor")
             
             let report = UIAlertAction(title: "REPORT", style: .default) { (action) in
-                self.sendEmail(reportedUser: "\(self.messageArray[indexPath.row].photoId)")
+                self.sendEmail(reportedUser: "\(self.receiverID)")
             }
-        
+            report.setValue(UIColor.red, forKey: "titleTextColor")
+            
+            if !(self.blockedUsers.contains(receiverUser)) {
+            let pm = UIAlertAction(title: "Private Message", style: .default) { (action) in
+                if self.pmControll {
+                let controllDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/PMs")
+                controllDB.observe(.childAdded, with: { (snapshot) in
+                    let snapshotValue = snapshot.value as! String
+                    let snapshotKey = snapshot.key
+                    if snapshotValue.contains(receiverUser){
+                        self.pm = snapshotKey
+                        
+                        let usersDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/PMs/\(self.pm)")
+                        usersDB.setValue(receiverUser)
+                        
+                        let otherDB = Database.database().reference().child("Users/\(self.receiverID)/PMs/\(self.pm)")
+                        otherDB.setValue(self.user)
+                        
+                        self.performSegue(withIdentifier: "PM", sender: nil)
+                    }
+                  
+                })
+                }
+                
+                else {
+                    self.pm = "\(Auth.auth().currentUser!.uid)\(self.receiverID)"
+                    
+                    let usersDB = Database.database().reference().child("Users/\(Auth.auth().currentUser!.uid)/PMs/\(self.pm)")
+                    usersDB.setValue(receiverUser)
+                    
+                    let otherDB = Database.database().reference().child("Users/\(self.receiverID)/PMs/\(self.pm)")
+                    otherDB.setValue(self.user)
+                   
+                    self.performSegue(withIdentifier: "PM", sender: nil)
+                    
+                }
+                
+
+                
+ 
+                
+                
+                
+                
+                
+            }
+                alert.addAction(pm)
+            }
+            
         let cancel = UIAlertAction(title: "CANCEL", style: .cancel, handler: nil)
             
         alert.addAction(block)
@@ -274,12 +498,10 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
     
     @IBAction func sendPressed(_ sender: AnyObject) {
         //MARK : -bando basat ersal payam va zakhire shodaneshun dar firebase
-        for i in 0..<doesNotAllowed.count{
-            if (messageTextfield.text?.contains(doesNotAllowed[i]))!  {
+        if (doesNotAllowed.contains(where: messageTextfield.text!.contains))  {
             
             messageTextfield.text = "***********"
             
-        }
         }
         
         if messageTextfield.text != ""{ // payam bedune matn nade
@@ -330,7 +552,7 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
             let sender = snapshotValue["sender"]!
             let photo = snapshotValue["photo"]!
             let message = Message()
-            print(self.blockedUsers)
+
             if !(self.blockedUsers.contains(sender)) {
             message.messageBody = text
             message.sender = sender
@@ -356,6 +578,11 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
         // amaliat do cath baraye inke age throw call emun be har dalili error dasht error toye catch handle she
         do
         {
+            if let db = Auth.auth().currentUser?.uid {
+                let onlineDB = Database.database().reference().child("OnlineUsers/\(db)")
+                onlineDB.removeValue()
+                
+            }
             try Auth.auth().signOut() // amaliat signout az dastorate firebase
             
         }
@@ -523,19 +750,35 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
             present(alert, animated: true, completion: nil)
         }
 //*************************************************************************************************************************************
+//MARK:- enteghal va daryaft etelaat az VCha
     }
     func updateBlackList(black :[String])
     {
         blockedUsers = black
+        print(blockedUsers)
     }
     
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "Black"{
         let blackListVC = segue.destination as! BlackList
             blackListVC.delegate = self
         blackListVC.blackList = blockedUsers
+        }
+        
+        if segue.identifier == "PM" {
+            
+            let PMVC = segue.destination as! PMViewController
+            PMVC.blockedUsers = blockedUsers
+            PMVC.rooms = pm
+            PMVC.otherUser = receiverID
+            
+            
+            
+        }
     }
 //*************************************************************************************************************************************
-//bando basat mail zadan az stackflow
+    //MARK:- bando basat mail zadan az stackflow
 
     func sendEmail(reportedUser : String) {
         let composeVC = MFMailComposeViewController()
@@ -560,5 +803,17 @@ vase hamin bayad barname befahme roye safhe va kharej textfield click mishe*/
         
     }
     
-
+    @IBAction func helpPressed(_ sender: UIBarButtonItem) {
+            
+            let alert = UIAlertController(title: "INFORMATION", message: "To block/report or send a private message to a user, hold your finger on their message for few seconds.", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Dismiss", style: .cancel, handler: nil)
+            alert.addAction(ok)
+            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+        }
+    
+}
+extension UIViewController {
+    open override func awakeFromNib() {
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    }
 }

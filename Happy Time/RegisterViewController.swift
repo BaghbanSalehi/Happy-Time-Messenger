@@ -27,7 +27,9 @@ class RegisterViewController: UIViewController,UITextFieldDelegate {
     
     var agreed = false
     
-    let doesNotAllowed = ["fuck","Fuck","bitch","BITCH","Nill","NILL","ADMIN","admin","Admin"]
+   let doesNotAllowed = ["fuck","Fuck","bitch","BITCH","Nill","NILL","ADMIN","admin","Admin","Nigga","NIGGA","fck","FCK"]
+//    let doesNotAllowed = CharacterSet(charactersIn: "fuck FUCK BITCH bitch ADMIN admin NILL nill NIGGA nigaa fkc FCK")
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,12 +87,15 @@ class RegisterViewController: UIViewController,UITextFieldDelegate {
                 handleError(error!)
                 SVProgressHUD.dismiss()
             }
-            else if (self.usernameTextfield.text?.trimmingCharacters(in: .whitespaces).isEmpty)! || self.doesNotAllowed.contains(self.usernameTextfield.text!)
+            
+            else if (self.usernameTextfield.text?.trimmingCharacters(in: .whitespaces).isEmpty)! || (self.doesNotAllowed.contains(where: self.usernameTextfield.text!.contains))
             {
                 Auth.auth().currentUser?.delete(completion: nil)
                 self.errorLabel.text = "Please enter a valid username"
                 SVProgressHUD.dismiss()
             }
+            
+                
             else if !self.agreed {
                 
                 Auth.auth().currentUser?.delete(completion: nil)

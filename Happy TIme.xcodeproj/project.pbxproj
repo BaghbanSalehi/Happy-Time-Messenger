@@ -20,6 +20,8 @@
 		8FA9E9535E777900373A1125 /* Pods_Happy_Time_Messenger.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA443ACD787E90A1FE6D22A4 /* Pods_Happy_Time_Messenger.framework */; };
 		E400A282226B21EA00C94757 /* BlackList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400A281226B21EA00C94757 /* BlackList.swift */; };
 		E400A284226B3B5000C94757 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400A283226B3B5000C94757 /* SwipeTableViewController.swift */; };
+		E4146E8E2276F55C00361C9D /* PVViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4146E8D2276F55C00361C9D /* PVViewController.swift */; };
+		E4146E922276FB3D00361C9D /* PMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4146E912276FB3D00361C9D /* PMViewController.swift */; };
 		E416DDD021F7421000B1CDE0 /* RoomsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E416DDCE21F7421000B1CDE0 /* RoomsCell.swift */; };
 		E416DDD321F74AD500B1CDE0 /* Rooms.swift in Sources */ = {isa = PBXBuildFile; fileRef = E416DDD221F74AD500B1CDE0 /* Rooms.swift */; };
 		E421F3BF21ECFA8A006E58AD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E421F3BE21ECFA8A006E58AD /* Images.xcassets */; };
@@ -28,6 +30,9 @@
 		E470668B21E255F6005F5CB2 /* MessageSent.xib in Resources */ = {isa = PBXBuildFile; fileRef = E470668621E24DAC005F5CB2 /* MessageSent.xib */; };
 		E470668E21E256B7005F5CB2 /* SentMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E470668C21E256B7005F5CB2 /* SentMessageCell.swift */; };
 		E4A8E62D21E4F4D100DAE404 /* VerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A8E62C21E4F4D100DAE404 /* VerificationViewController.swift */; };
+		E4C2F8FE227885DC007E4D7D /* BadgeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C2F8FD227885DC007E4D7D /* BadgeButton.swift */; };
+		E4D66DB72274959F00AE85A8 /* OnlineUsersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D66DB62274959F00AE85A8 /* OnlineUsersViewController.swift */; };
+		E4D66DB92274959F00AE85A8 /* OnlineUsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D66DB82274959F00AE85A8 /* OnlineUsers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +53,8 @@
 		CA60839F692BD2A9D174E04F /* Pods-Happy Time Messenger.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Happy Time Messenger.release.xcconfig"; path = "Pods/Target Support Files/Pods-Happy Time Messenger/Pods-Happy Time Messenger.release.xcconfig"; sourceTree = "<group>"; };
 		E400A281226B21EA00C94757 /* BlackList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackList.swift; sourceTree = "<group>"; };
 		E400A283226B3B5000C94757 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
+		E4146E8D2276F55C00361C9D /* PVViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PVViewController.swift; sourceTree = "<group>"; };
+		E4146E912276FB3D00361C9D /* PMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PMViewController.swift; sourceTree = "<group>"; };
 		E416DDCE21F7421000B1CDE0 /* RoomsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomsCell.swift; sourceTree = "<group>"; };
 		E416DDD221F74AD500B1CDE0 /* Rooms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rooms.swift; sourceTree = "<group>"; };
 		E421F3BE21ECFA8A006E58AD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -56,6 +63,9 @@
 		E470668621E24DAC005F5CB2 /* MessageSent.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageSent.xib; sourceTree = "<group>"; };
 		E470668C21E256B7005F5CB2 /* SentMessageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SentMessageCell.swift; sourceTree = "<group>"; };
 		E4A8E62C21E4F4D100DAE404 /* VerificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationViewController.swift; sourceTree = "<group>"; };
+		E4C2F8FD227885DC007E4D7D /* BadgeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeButton.swift; sourceTree = "<group>"; };
+		E4D66DB62274959F00AE85A8 /* OnlineUsersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineUsersViewController.swift; sourceTree = "<group>"; };
+		E4D66DB82274959F00AE85A8 /* OnlineUsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineUsers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +152,9 @@
 				63E28B2E1B9A337600FBF6E0 /* WelcomeViewController.swift */,
 				E4A8E62C21E4F4D100DAE404 /* VerificationViewController.swift */,
 				E416DDD221F74AD500B1CDE0 /* Rooms.swift */,
+				E4D66DB62274959F00AE85A8 /* OnlineUsersViewController.swift */,
+				E4146E8D2276F55C00361C9D /* PVViewController.swift */,
+				E4146E912276FB3D00361C9D /* PMViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -160,6 +173,8 @@
 			isa = PBXGroup;
 			children = (
 				63E28B241B9A335300FBF6E0 /* Message.swift */,
+				E4D66DB82274959F00AE85A8 /* OnlineUsers.swift */,
+				E4C2F8FD227885DC007E4D7D /* BadgeButton.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -313,17 +328,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4D66DB72274959F00AE85A8 /* OnlineUsersViewController.swift in Sources */,
 				63E28B331B9A337600FBF6E0 /* WelcomeViewController.swift in Sources */,
 				E416DDD321F74AD500B1CDE0 /* Rooms.swift in Sources */,
 				63E28B251B9A335300FBF6E0 /* Message.swift in Sources */,
 				6321A9E21B94EBE70053D2E7 /* CustomMessageCell.swift in Sources */,
 				63E28B321B9A337600FBF6E0 /* RegisterViewController.swift in Sources */,
 				63E28B311B9A337600FBF6E0 /* LogInViewController.swift in Sources */,
+				E4146E922276FB3D00361C9D /* PMViewController.swift in Sources */,
 				63E28B2F1B9A337600FBF6E0 /* AppDelegate.swift in Sources */,
 				E4A8E62D21E4F4D100DAE404 /* VerificationViewController.swift in Sources */,
 				E416DDD021F7421000B1CDE0 /* RoomsCell.swift in Sources */,
 				E400A284226B3B5000C94757 /* SwipeTableViewController.swift in Sources */,
+				E4D66DB92274959F00AE85A8 /* OnlineUsers.swift in Sources */,
 				63E28B301B9A337600FBF6E0 /* ChatViewController.swift in Sources */,
+				E4146E8E2276F55C00361C9D /* PVViewController.swift in Sources */,
+				E4C2F8FE227885DC007E4D7D /* BadgeButton.swift in Sources */,
 				E470668E21E256B7005F5CB2 /* SentMessageCell.swift in Sources */,
 				E400A282226B21EA00C94757 /* BlackList.swift in Sources */,
 			);
